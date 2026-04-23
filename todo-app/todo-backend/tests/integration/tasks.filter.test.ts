@@ -83,7 +83,7 @@ vi.mock('../../src/repositories/prisma-client', () => ({
 
 import { buildTestApp } from '../helpers/build-app'
 
-const JWT_SECRET = 'test-secret-that-is-long-enough-32ch'
+const JWT_SECRET = process.env['JWT_SECRET'] ?? 'test-secret-that-is-long-enough-32ch'
 
 function makeToken(userId: string) {
   return `Bearer ${sign(
@@ -115,9 +115,8 @@ describe('Task Filter Endpoints — Integration', () => {
   const AUTH = makeToken(USER_ID)
 
   beforeAll(async () => {
-    process.env['JWT_SECRET'] = JWT_SECRET
-    process.env['DATABASE_URL'] = 'postgresql://test'
-    process.env['REDIS_URL'] = 'redis://localhost'
+    process.env['DATABASE_URL'] = process.env['DATABASE_URL'] ?? 'postgresql://test'
+    process.env['REDIS_URL'] = process.env['REDIS_URL'] ?? 'redis://localhost'
     app = await buildTestApp()
   })
 

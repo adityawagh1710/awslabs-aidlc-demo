@@ -138,9 +138,8 @@ describe('Task Routes — Integration', () => {
   const AUTH = makeToken(USER_ID)
 
   beforeAll(async () => {
-    process.env['JWT_SECRET'] = 'test-secret-that-is-long-enough-32ch'
-    process.env['DATABASE_URL'] = 'postgresql://test'
-    process.env['REDIS_URL'] = 'redis://localhost'
+    process.env['DATABASE_URL'] = process.env['DATABASE_URL'] ?? 'postgresql://test'
+    process.env['REDIS_URL'] = process.env['REDIS_URL'] ?? 'redis://localhost'
     app = await buildTestApp()
   })
 

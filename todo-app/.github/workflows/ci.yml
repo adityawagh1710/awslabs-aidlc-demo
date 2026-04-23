@@ -78,6 +78,7 @@ jobs:
       CORS_ORIGIN: '*'
       LOG_LEVEL: warn
       BCRYPT_ROUNDS: 4
+      PORT: 3001
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
