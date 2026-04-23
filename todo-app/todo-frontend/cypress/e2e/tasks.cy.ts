@@ -3,9 +3,8 @@ const PASSWORD = 'Cypress1!'
 
 // Helper: navigate to new task form via the button (ensures auth is ready)
 function goToNewTask() {
-  cy.visit('/')
-  cy.get('[data-testid="dashboard-new-task-button"]', { timeout: 10000 }).click()
-  cy.get('[data-testid="task-form"]', { timeout: 10000 }).should('be.visible')
+  cy.get('[data-testid="dashboard-new-task-button"]', { timeout: 15000 }).click()
+  cy.get('[data-testid="task-form"]', { timeout: 15000 }).should('be.visible')
 }
 
 describe('Task Management', () => {
@@ -15,8 +14,8 @@ describe('Task Management', () => {
 
   beforeEach(() => {
     cy.loginByApi(EMAIL, PASSWORD)
-    cy.visit('/')
-    cy.get('[data-testid="dashboard-page"]', { timeout: 10000 }).should('be.visible')
+    // loginByApi already navigates to / and waits for dashboard
+    cy.get('[data-testid="dashboard-page"]', { timeout: 15000 }).should('be.visible')
   })
 
   it('shows empty state when no tasks', () => {

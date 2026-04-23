@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 // Login via API then inject tokens into the browser's sessionStorage.
-// Visits the app first to ensure a window context exists for sessionStorage.
+// Sets tokens directly without relying on PersistAuth's async refresh flow.
 Cypress.Commands.add('loginByApi', (email: string, password: string) => {
   cy.request({
     method: 'POST',
@@ -11,13 +11,17 @@ Cypress.Commands.add('loginByApi', (email: string, password: string) => {
   }).then((res) => {
     if (res.status === 200) {
       const { accessToken, refreshToken, user } = res.body
-      // Visit the app so sessionStorage is available, then set tokens
+      // Visit app, set tokens, then reload so PersistAuth picks them up fresh
       cy.visit('/', { failOnStatusCode: false })
       cy.window().then((win) => {
         win.sessionStorage.setItem('accessToken', accessToken)
         win.sessionStorage.setItem('refreshToken', refreshToken)
         win.sessionStorage.setItem('user', JSON.stringify(user))
       })
+      // Reload so the app initialises with the tokens already in sessionStorage
+      cy.reload()
+      // Wait for the dashboard to be ready
+      cy.get('[data-testid="dashboard-page"]', { timeout: 15000 }).should('be.visible')
     }
   })
 })

@@ -26,7 +26,7 @@ describe('Search & Filters', () => {
 
   beforeEach(() => {
     cy.loginByApi(EMAIL, PASSWORD)
-    cy.visit('/')
+    // loginByApi already navigates to / and waits for dashboard
   })
 
   it('renders filter bar', () => {

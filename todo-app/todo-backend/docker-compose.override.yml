@@ -34,3 +34,4 @@ services:
       target: development    # Vite dev server with HMR
     environment:
       NODE_ENV: development
+      VITE_API_TARGET: http://api:3000

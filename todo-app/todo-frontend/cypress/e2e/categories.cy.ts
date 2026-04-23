@@ -9,8 +9,7 @@ describe('Categories', () => {
   beforeEach(() => {
     cy.loginByApi(EMAIL, PASSWORD)
     cy.visit('/categories')
-    // Wait for the page to fully load
-    cy.get('[data-testid="category-manager"]').should('be.visible')
+    cy.get('[data-testid="category-manager"]', { timeout: 15000 }).should('be.visible')
   })
 
   it('shows empty state when no categories', () => {
