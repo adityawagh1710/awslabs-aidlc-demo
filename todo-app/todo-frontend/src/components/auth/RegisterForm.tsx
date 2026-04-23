@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useRegisterMutation } from '@/store/api/authApi'
 import { useAppDispatch } from '@/store/hooks'
+import { setCredentials } from '@/store/authSlice'
 import { addToast } from '@/store/uiSlice'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -48,7 +49,11 @@ export function RegisterForm() {
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
-      await register({ email: values.email, password: values.password }).unwrap()
+      const data = await register({ email: values.email, password: values.password }).unwrap()
+      dispatch(setCredentials({ accessToken: data.accessToken, user: data.user }))
+      sessionStorage.setItem('accessToken', data.accessToken)
+      sessionStorage.setItem('refreshToken', data.refreshToken)
+      sessionStorage.setItem('user', JSON.stringify(data.user))
       navigate('/')
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status

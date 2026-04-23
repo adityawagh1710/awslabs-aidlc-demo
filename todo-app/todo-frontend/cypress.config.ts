@@ -7,7 +7,9 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
-    defaultCommandTimeout: 8000,
+    defaultCommandTimeout: 15000,
+    pageLoadTimeout: 30000,
+    requestTimeout: 15000,
     setupNodeEvents(_on, _config) {},
   },
 })

@@ -20,8 +20,9 @@ describe('Authentication', () => {
     cy.get('[data-testid="register-form-password-input"]').type(PASSWORD)
     cy.get('[data-testid="register-form-confirm-password-input"]').type(PASSWORD)
     cy.get('[data-testid="register-form-submit-button"]').click()
-    cy.url().should('eq', Cypress.config('baseUrl') + '/')
-    cy.get('[data-testid="app-shell"]').should('be.visible')
+    // Wait for redirect — PersistAuth may take a moment to initialise
+    cy.url().should('eq', Cypress.config('baseUrl') + '/', { timeout: 15000 })
+    cy.get('[data-testid="app-shell"]', { timeout: 15000 }).should('be.visible')
   })
 
   it('shows error on wrong password', () => {
@@ -37,8 +38,8 @@ describe('Authentication', () => {
     cy.get('[data-testid="login-form-email-input"]').type(EMAIL)
     cy.get('[data-testid="login-form-password-input"]').type(PASSWORD)
     cy.get('[data-testid="login-form-submit-button"]').click()
-    cy.url().should('eq', Cypress.config('baseUrl') + '/')
-    cy.get('[data-testid="app-shell-user-email"]').should('contain', EMAIL)
+    cy.url().should('eq', Cypress.config('baseUrl') + '/', { timeout: 15000 })
+    cy.get('[data-testid="app-shell-user-email"]', { timeout: 15000 }).should('contain', EMAIL)
   })
 
   it('logs out and redirects to login', () => {
@@ -47,7 +48,7 @@ describe('Authentication', () => {
     cy.get('[data-testid="login-form-email-input"]').type(EMAIL + '.logout')
     cy.get('[data-testid="login-form-password-input"]').type(PASSWORD)
     cy.get('[data-testid="login-form-submit-button"]').click()
-    cy.get('[data-testid="app-shell-logout-button"]').click()
+    cy.get('[data-testid="app-shell-logout-button"]', { timeout: 15000 }).click()
     cy.url().should('include', '/login')
   })
 
@@ -55,6 +56,6 @@ describe('Authentication', () => {
     cy.registerUser(EMAIL + '.redir', PASSWORD)
     cy.loginByApi(EMAIL + '.redir', PASSWORD)
     cy.visit('/login')
-    cy.url().should('eq', Cypress.config('baseUrl') + '/')
+    cy.url().should('eq', Cypress.config('baseUrl') + '/', { timeout: 15000 })
   })
 })

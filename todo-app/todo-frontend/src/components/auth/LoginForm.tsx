@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useLoginMutation } from '@/store/api/authApi'
 import { useAppDispatch } from '@/store/hooks'
+import { setCredentials } from '@/store/authSlice'
 import { addToast } from '@/store/uiSlice'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,7 +38,13 @@ export function LoginForm() {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      await login(values).unwrap()
+      const data = await login(values).unwrap()
+      // Dispatch credentials synchronously before navigating so ProtectedRoute
+      // sees isAuthenticated=true immediately on redirect
+      dispatch(setCredentials({ accessToken: data.accessToken, user: data.user }))
+      sessionStorage.setItem('accessToken', data.accessToken)
+      sessionStorage.setItem('refreshToken', data.refreshToken)
+      sessionStorage.setItem('user', JSON.stringify(data.user))
       navigate('/')
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status
