@@ -8,7 +8,9 @@ describe('Categories', () => {
 
   beforeEach(() => {
     cy.loginByApi(EMAIL, PASSWORD)
-    cy.visit('/categories')
+    // Navigate via URL — app shell is already rendered so ProtectedRoute is initialised
+    cy.get('[data-testid="app-shell"]', { timeout: 15000 }).should('be.visible')
+    cy.get('[data-testid="app-shell-categories-link"]').click()
     cy.get('[data-testid="category-manager"]', { timeout: 15000 }).should('be.visible')
   })
 
@@ -23,15 +25,14 @@ describe('Categories', () => {
   })
 
   it('rejects duplicate category name', () => {
-    // Create first
     cy.get('[data-testid="category-manager-new-input"]').type('Duplicate')
     cy.contains('button', 'Add').click()
     cy.contains('Duplicate').should('be.visible')
-    // Try to create again immediately
     cy.get('[data-testid="category-manager-new-input"]').type('Duplicate')
     cy.contains('button', 'Add').click()
-    // Toast appears briefly — catch it quickly
-    cy.contains('You already have a category with this name', { timeout: 6000 }).should('be.visible')
+    // Error shown inline (persists, no toast timing issues)
+    cy.get('[data-testid="category-create-error"]', { timeout: 8000 }).should('be.visible')
+    cy.contains('already have a category').should('be.visible')
   })
 
   it('deletes a category', () => {

@@ -36,13 +36,21 @@ export function CategoryManager() {
     resolver: zodResolver(nameSchema),
   })
 
+  const [createError, setCreateError] = useState<string | null>(null)
+
   const handleCreate = async (values: NameValues) => {
+    setCreateError(null)
     try {
       await createCategory({ name: values.name }).unwrap()
       reset()
       dispatch(addToast({ title: 'Category created' }))
-    } catch {
-      dispatch(addToast({ title: 'Failed to create category', variant: 'destructive' }))
+    } catch (err: unknown) {
+      const msg = (err as { data?: { message?: string } })?.data?.message
+      if (msg) {
+        setCreateError(msg)
+      } else {
+        dispatch(addToast({ title: 'Failed to create category', variant: 'destructive' }))
+      }
     }
   }
 
@@ -81,6 +89,9 @@ export function CategoryManager() {
           />
           {errors.name && (
             <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>
+          )}
+          {createError && (
+            <p className="mt-1 text-sm text-destructive" data-testid="category-create-error">{createError}</p>
           )}
         </div>
         <Button type="submit" disabled={isCreating}>
