@@ -1,0 +1,36 @@
+# Development overrides — merged automatically by Docker Compose.
+# Safe defaults so `docker compose up -d --build` works with zero config.
+# DO NOT use these defaults in production.
+
+services:
+  db:
+    ports:
+      - "5433:5432"          # expose to host for DBeaver / Prisma Studio
+    environment:
+      POSTGRES_PASSWORD: changeme
+
+  redis:
+    ports:
+      - "6379:6379"          # expose to host for debugging
+
+  api:
+    build:
+      target: development    # hot-reload via tsx watch
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+      POSTGRES_PASSWORD: changeme
+      DATABASE_URL: postgresql://todo_app:changeme@db:5432/todo
+      JWT_SECRET: dev-secret-change-in-production-min32ch
+      CORS_ORIGIN: "*"
+      LOG_LEVEL: info
+      BCRYPT_ROUNDS: "12"
+    volumes:
+      - ./src:/app/src:ro
+      - ./prisma:/app/prisma:ro
+
+  frontend:
+    build:
+      target: development    # Vite dev server with HMR
+    environment:
+      NODE_ENV: development
