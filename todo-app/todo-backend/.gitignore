@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Environment — never commit secrets
+.env
+.env.test
+.env.*.local
+
+# Prisma generated client (regenerated via `prisma generate`)
+node_modules/.prisma/
+
+# Logs
+*.log
+npm-debug.log*
+pino.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker local data (if bind-mounted)
+data/

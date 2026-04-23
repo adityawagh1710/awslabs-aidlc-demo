@@ -1,0 +1,287 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Backend ─────────────────────────────────────────────────────────────────
+
+  backend-lint:
+    name: Backend Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'todo-app/todo-backend/package-lock.json'
+      - run: npm ci
+        working-directory: todo-app/todo-backend
+      - run: npm run lint
+        working-directory: todo-app/todo-backend
+
+  backend-type-check:
+    name: Backend Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'todo-app/todo-backend/package-lock.json'
+      - run: npm ci
+        working-directory: todo-app/todo-backend
+      - run: npm run type-check
+        working-directory: todo-app/todo-backend
+
+  backend-test:
+    name: Backend Test
+    runs-on: ubuntu-latest
+    needs: [backend-lint, backend-type-check]
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: todo_app
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: todo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U todo_app -d todo_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://todo_app:ci_password@localhost:5432/todo_test
+      DATABASE_URL_TEST: postgresql://todo_app:ci_password@localhost:5432/todo_test
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-test-jwt-secret-minimum-32-chars-long
+      JWT_EXPIRES_IN: 15m
+      JWT_ISSUER: todo-api
+      JWT_AUDIENCE: todo-client
+      CORS_ORIGIN: '*'
+      LOG_LEVEL: warn
+      BCRYPT_ROUNDS: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'todo-app/todo-backend/package-lock.json'
+      - run: npm ci
+        working-directory: todo-app/todo-backend
+      - run: npx prisma generate
+        working-directory: todo-app/todo-backend
+      - run: npx prisma migrate deploy
+        working-directory: todo-app/todo-backend
+        env:
+          DATABASE_URL: postgresql://todo_app:ci_password@localhost:5432/todo_test
+      - run: npm test
+        working-directory: todo-app/todo-backend
+
+  backend-docker:
+    name: Backend Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [backend-test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./todo-app/todo-backend
+          target: production
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:latest
+            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+
+  # ── Frontend ─────────────────────────────────────────────────────────────────
+
+  frontend-lint:
+    name: Frontend Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'todo-app/todo-frontend/package-lock.json'
+      - run: npm ci
+        working-directory: todo-app/todo-frontend
+      - run: npm run lint
+        working-directory: todo-app/todo-frontend
+      - run: npm run type-check
+        working-directory: todo-app/todo-frontend
+
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: [frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'todo-app/todo-frontend/package-lock.json'
+      - run: npm ci
+        working-directory: todo-app/todo-frontend
+      - run: npm test
+        working-directory: todo-app/todo-frontend
+
+  frontend-docker:
+    name: Frontend Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [frontend-test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./todo-app/todo-frontend
+          target: production
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/frontend:latest
+            ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+
+  # ── E2E (Cypress) ────────────────────────────────────────────────────────────
+
+  e2e:
+    name: E2E Tests (Cypress)
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: todo_app
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: todo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U todo_app -d todo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            todo-app/todo-backend/package-lock.json
+            todo-app/todo-frontend/package-lock.json
+
+      # ── Backend setup ──────────────────────────────────────────────────────
+      - name: Install backend deps
+        run: npm ci
+        working-directory: todo-app/todo-backend
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: todo-app/todo-backend
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
+        working-directory: todo-app/todo-backend
+        env:
+          DATABASE_URL: postgresql://todo_app:ci_password@localhost:5432/todo
+
+      - name: Start backend
+        run: npm run dev &
+        working-directory: todo-app/todo-backend
+        env:
+          NODE_ENV: development
+          PORT: 3000
+          DATABASE_URL: postgresql://todo_app:ci_password@localhost:5432/todo
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci-e2e-jwt-secret-minimum-32-chars-long
+          JWT_EXPIRES_IN: 15m
+          JWT_ISSUER: todo-api
+          JWT_AUDIENCE: todo-client
+          CORS_ORIGIN: '*'
+          LOG_LEVEL: warn
+          BCRYPT_ROUNDS: 4
+
+      - name: Wait for backend
+        run: npx wait-on http://localhost:3000/health --timeout 30000
+
+      # ── Frontend setup ─────────────────────────────────────────────────────
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: todo-app/todo-frontend
+
+      - name: Start frontend (Vite dev)
+        run: npm run dev &
+        working-directory: todo-app/todo-frontend
+        env:
+          NODE_ENV: development
+
+      - name: Wait for frontend
+        run: npx wait-on http://localhost:5173 --timeout 30000
+
+      # ── Cypress ────────────────────────────────────────────────────────────
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: todo-app/todo-frontend
+          install: false
+          browser: electron
+          headed: false
+        env:
+          CYPRESS_BASE_URL: http://localhost:5173
+
+      - name: Upload Cypress screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: todo-app/todo-frontend/cypress/screenshots
+          retention-days: 7

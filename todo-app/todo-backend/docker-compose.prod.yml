@@ -1,0 +1,36 @@
+# Production overrides.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# ALL variables marked REQUIRED must be set — no defaults are provided.
+# Set them via environment variables or a .env file before running.
+#
+# Minimum required:
+#   POSTGRES_PASSWORD=<strong-password>
+#   JWT_SECRET=<random-32+-char-string>
+#   CORS_ORIGIN=https://your-domain.com
+
+services:
+  db:
+    # Do NOT expose DB port to host in production
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required in production}
+
+  api:
+    build:
+      target: production     # compiled JS, no dev tools, non-root user
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: postgresql://todo_app:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/todo
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required in production}
+      CORS_ORIGIN: ${CORS_ORIGIN:?CORS_ORIGIN is required in production}
+      LOG_LEVEL: warn
+      BCRYPT_ROUNDS: "12"
+    # No source bind mounts in production — image is self-contained
+    volumes: []
+
+  frontend:
+    build:
+      target: production     # Nginx serving static bundle
+    ports:
+      - "80:80"              # serve on port 80 in production

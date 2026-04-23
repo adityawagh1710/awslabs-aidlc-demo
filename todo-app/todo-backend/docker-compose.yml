@@ -1,0 +1,72 @@
+# Base compose — shared service definitions.
+# Do NOT use directly. Use with an override file:
+#
+#   Development:  docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+#   Production:   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Shortcut: `docker compose up -d --build` uses docker-compose.yml + docker-compose.dev.yml
+# automatically (Docker Compose merges docker-compose.override.yml by default).
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: todo_app
+      POSTGRES_DB: todo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo_app -d todo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - todo-net
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - todo-net
+
+  api:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      REDIS_URL: redis://redis:6379
+      JWT_ISSUER: todo-api
+      JWT_AUDIENCE: todo-client
+      JWT_EXPIRES_IN: 15m
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - todo-net
+
+  frontend:
+    build:
+      context: ../todo-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    networks:
+      - todo-net
+
+volumes:
+  pgdata:
+
+networks:
+  todo-net:
+    driver: bridge
