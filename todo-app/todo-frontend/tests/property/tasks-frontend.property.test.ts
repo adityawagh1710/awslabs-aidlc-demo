@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { setSortBy, setSortOrder } from '@/store/uiSlice'
 import { configureStore } from '@reduxjs/toolkit'
+import { z } from 'zod'
+
+import { setSortBy, setSortOrder } from '@/store/uiSlice'
 import uiReducer from '@/store/uiSlice'
 import type { SortBy } from '@/store/uiSlice'
 
@@ -46,7 +48,6 @@ describe('PBT-CLIENT-05: Sort state preservation', () => {
 // PBT-CLIENT-07: Form validation completeness
 describe('PBT-CLIENT-07: Title validation', () => {
   it('any title string with length > 255 should fail Zod schema', () => {
-    const { z } = require('zod')
     const schema = z.string().max(255, 'Title must be 255 characters or fewer')
     fc.assert(
       fc.property(
@@ -60,7 +61,6 @@ describe('PBT-CLIENT-07: Title validation', () => {
   })
 
   it('any title string with length 1–255 passes max-length check', () => {
-    const { z } = require('zod')
     const schema = z.string().min(1).max(255)
     fc.assert(
       fc.property(

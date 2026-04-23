@@ -1,3 +1,4 @@
+import fastifyJwtPlugin from '@fastify/jwt'
 import fp from 'fastify-plugin'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 
@@ -6,7 +7,8 @@ import { ServiceUnavailableError, UnauthorizedError } from '../domain/errors'
 import type { TokenPayload } from '../types/fastify'
 
 async function authPlugin(fastify: FastifyInstance): Promise<void> {
-  await fastify.register(import('@fastify/jwt'), {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await fastify.register(fastifyJwtPlugin as any, {
     secret: env.JWT_SECRET,
     sign: {
       expiresIn: env.JWT_EXPIRES_IN,

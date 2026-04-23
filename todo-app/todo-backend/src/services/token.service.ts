@@ -1,5 +1,7 @@
 import { randomUUID } from 'crypto'
+
 import type { FastifyInstance } from 'fastify'
+
 import { UnauthorizedError } from '../domain/errors'
 import type { TokenPayload } from '../types/fastify'
 

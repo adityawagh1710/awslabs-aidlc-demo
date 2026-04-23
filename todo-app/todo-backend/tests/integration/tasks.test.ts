@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import type { FastifyInstance } from 'fastify'
+import { sign } from 'jsonwebtoken'
+
+import { buildTestApp } from '../helpers/build-app'
 
 // ── Hoisted in-memory stores ──────────────────────────────────────────────────
 const { taskStore, categoryStore, taskCategoryStore, redisMock, userStore } = vi.hoisted(() => {
@@ -90,7 +93,7 @@ vi.mock('../../src/repositories/prisma-client', () => ({
       deleteMany: vi.fn(async ({ where }: any) => {
         if (where.taskId) taskCategoryStore.set(where.taskId, new Set())
         if (where.categoryId) {
-          for (const [taskId, cats] of taskCategoryStore) {
+          for (const [, cats] of taskCategoryStore) {
             cats.delete(where.categoryId)
           }
         }
@@ -120,9 +123,6 @@ vi.mock('../../src/repositories/prisma-client', () => ({
     $disconnect: vi.fn().mockResolvedValue(undefined),
   },
 }))
-
-import { buildTestApp } from '../helpers/build-app'
-import { sign } from 'jsonwebtoken'
 
 function makeToken(userId: string) {
   return `Bearer ${sign(

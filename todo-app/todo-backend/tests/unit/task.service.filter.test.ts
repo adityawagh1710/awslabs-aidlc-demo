@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
+
 import { TaskService, normalizeSearch } from '../../src/services/task.service'
-import { ValidationError } from '../../src/domain/errors'
 
 // ── normalizeSearch unit tests ────────────────────────────────────────────────
 

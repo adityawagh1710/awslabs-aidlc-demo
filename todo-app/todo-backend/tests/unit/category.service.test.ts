@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
+
 import { CategoryService } from '../../src/services/category.service'
 import { ConflictError, ForbiddenError, NotFoundError } from '../../src/domain/errors'
 

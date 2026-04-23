@@ -1,3 +1,4 @@
+/// <reference types="vitest/globals" />
 import '@testing-library/jest-dom'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'

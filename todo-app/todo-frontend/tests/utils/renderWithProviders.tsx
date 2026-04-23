@@ -3,6 +3,7 @@ import { render, RenderOptions } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
+
 import authReducer from '@/store/authSlice'
 import uiReducer from '@/store/uiSlice'
 import { authApi } from '@/store/api/authApi'
@@ -25,7 +26,8 @@ export function renderWithProviders(
     ...renderOptions
   }: RenderWithProvidersOptions = {}
 ) {
-  const store = configureStore({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const store = (configureStore as any)({
     reducer: {
       auth: authReducer,
       ui: uiReducer,
@@ -33,12 +35,13 @@ export function renderWithProviders(
       [tasksApi.reducerPath]: tasksApi.reducer,
       [categoriesApi.reducerPath]: categoriesApi.reducer,
     },
-    middleware: (getDefaultMiddleware) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    middleware: (getDefaultMiddleware: any) =>
       getDefaultMiddleware()
         .concat(authApi.middleware)
         .concat(tasksApi.middleware)
         .concat(categoriesApi.middleware),
-    preloadedState: preloadedState as never,
+    preloadedState,
   })
 
   function Wrapper({ children }: { children: React.ReactNode }) {

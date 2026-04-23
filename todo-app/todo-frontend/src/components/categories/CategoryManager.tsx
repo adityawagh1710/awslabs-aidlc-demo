@@ -3,6 +3,7 @@ import { Pencil, Trash2, Check, X } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -108,6 +109,7 @@ export function CategoryManager() {
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     className="h-7 flex-1"
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus
                     data-testid={`category-item-rename-input-${cat.id}`}
                   />
@@ -132,7 +134,10 @@ export function CategoryManager() {
                 <>
                   <span
                     className="cursor-pointer text-sm hover:underline"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => { setEditingId(cat.id); setEditName(cat.name) }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setEditingId(cat.id); setEditName(cat.name) } }}
                   >
                     {cat.name}
                   </span>

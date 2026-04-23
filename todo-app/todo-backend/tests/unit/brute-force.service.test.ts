@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import fc from 'fast-check'
 import type { Redis } from 'ioredis'
+
 import { BruteForceService } from '../../src/services/brute-force.service'
 
 function makeRedis(overrides: Partial<Record<keyof Redis, unknown>> = {}): Redis {

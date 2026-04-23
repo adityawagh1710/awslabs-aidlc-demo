@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+
 import { CategoryManager } from '@/components/categories/CategoryManager'
 
 export function CategoryManagementPage() {

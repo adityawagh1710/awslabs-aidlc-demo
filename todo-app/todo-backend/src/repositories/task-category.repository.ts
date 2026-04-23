@@ -1,4 +1,5 @@
 import type { Category } from '@prisma/client'
+
 import { prisma } from './prisma-client'
 
 export class TaskCategoryRepository {

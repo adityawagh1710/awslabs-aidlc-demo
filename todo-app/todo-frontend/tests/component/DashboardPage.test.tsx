@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
+
 import { renderWithProviders } from '../utils/renderWithProviders'
+
 import { DashboardPage } from '@/pages/DashboardPage'
 
 describe('DashboardPage', () => {

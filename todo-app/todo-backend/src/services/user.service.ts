@@ -1,4 +1,5 @@
 import type { User } from '@prisma/client'
+
 import type { UserRepository } from '../repositories/user.repository'
 
 export class UserService {

@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom'
+
 import { useAppSelector } from '@/store/hooks'
 import { selectIsAuthenticated } from '@/store/authSlice'
 import { RegisterForm } from '@/components/auth/RegisterForm'

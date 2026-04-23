@@ -4,6 +4,7 @@ import {
   FetchBaseQueryError,
   fetchBaseQuery,
 } from '@reduxjs/toolkit/query/react'
+
 import type { RootState } from '@/store'
 import {
   clearCredentials,
@@ -45,35 +46,34 @@ export const baseQueryWithReauth: BaseQueryFn<
 
     if (!isRefreshing) {
       isRefreshing = true
-      refreshPromise = baseQuery(
-        {
-          url: '/auth/refresh',
-          method: 'POST',
-          body: { refreshToken },
-        },
-        api,
-        extraOptions
-      ).then((refreshResult) => {
-        if (refreshResult.data) {
-          const { accessToken, refreshToken: newRefreshToken } =
-            refreshResult.data as RefreshResponse
-          const user = (api.getState() as RootState).auth.user!
-          api.dispatch(setCredentials({ accessToken, user }))
-          sessionStorage.setItem('refreshToken', newRefreshToken)
-          return true
-        } else {
-          api.dispatch(clearCredentials())
-          sessionStorage.removeItem('refreshToken')
-          sessionStorage.removeItem('user')
-          api.dispatch(
-            setSessionExpiredMessage('Your session has expired. Please log in again.')
+      refreshPromise = (async () => {
+        try {
+          const refreshResult = await baseQuery(
+            { url: '/auth/refresh', method: 'POST', body: { refreshToken } },
+            api,
+            extraOptions,
           )
-          return false
+          if (refreshResult.data) {
+            const { accessToken, refreshToken: newRefreshToken } =
+              refreshResult.data as RefreshResponse
+            const user = (api.getState() as RootState).auth.user!
+            api.dispatch(setCredentials({ accessToken, user }))
+            sessionStorage.setItem('refreshToken', newRefreshToken)
+            sessionStorage.setItem('accessToken', accessToken)
+            return true
+          } else {
+            api.dispatch(clearCredentials())
+            sessionStorage.removeItem('refreshToken')
+            sessionStorage.removeItem('user')
+            sessionStorage.removeItem('accessToken')
+            api.dispatch(setSessionExpiredMessage('Your session has expired. Please log in again.'))
+            return false
+          }
+        } finally {
+          isRefreshing = false
+          refreshPromise = null
         }
-      }).finally(() => {
-        isRefreshing = false
-        refreshPromise = null
-      })
+      })()
     }
 
     const refreshed = await refreshPromise

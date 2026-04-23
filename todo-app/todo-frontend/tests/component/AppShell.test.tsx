@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { renderWithProviders } from '../utils/renderWithProviders'
+
 import { AppShell } from '@/components/layout/AppShell'
 
 const mockUser = { id: 'u1', email: 'user@example.com', createdAt: '2026-01-01T00:00:00Z' }

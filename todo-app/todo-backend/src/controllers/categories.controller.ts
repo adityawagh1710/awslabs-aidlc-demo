@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
+
 import type { CategoryService } from '../services/category.service'
 
 export class CategoryController {

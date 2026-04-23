@@ -1,9 +1,11 @@
 import bcrypt from 'bcryptjs'
 import type { FastifyBaseLogger } from 'fastify'
 import type { User } from '@prisma/client'
+
 import { ConflictError, UnauthorizedError } from '../domain/errors'
 import type { UserRepository } from '../repositories/user.repository'
-import type { TokenService, TokenPair } from './token.service'
+
+import type { TokenService } from './token.service'
 import type { BruteForceService } from './brute-force.service'
 
 export interface UserDto {

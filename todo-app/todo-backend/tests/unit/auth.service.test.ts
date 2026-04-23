@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import fc from 'fast-check'
 import type { User } from '@prisma/client'
+import type { FastifyBaseLogger } from 'fastify'
+
 import { AuthService } from '../../src/services/auth.service'
 import { ConflictError, UnauthorizedError } from '../../src/domain/errors'
 import type { UserRepository } from '../../src/repositories/user.repository'
 import type { TokenService, TokenPair } from '../../src/services/token.service'
 import type { BruteForceService } from '../../src/services/brute-force.service'
-import type { FastifyBaseLogger } from 'fastify'
 
 function makeUser(overrides: Partial<User> = {}): User {
   return {

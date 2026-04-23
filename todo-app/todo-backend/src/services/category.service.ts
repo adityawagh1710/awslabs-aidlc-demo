@@ -1,4 +1,5 @@
 import type { Category } from '@prisma/client'
+
 import { ConflictError, ForbiddenError, NotFoundError } from '../domain/errors'
 import type { CategoryRepository } from '../repositories/category.repository'
 import type { TaskCategoryRepository } from '../repositories/task-category.repository'

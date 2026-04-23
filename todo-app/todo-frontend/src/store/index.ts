@@ -1,4 +1,5 @@
 import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit'
+
 import authReducer, { clearCredentials } from '@/store/authSlice'
 import uiReducer from '@/store/uiSlice'
 import { authApi } from '@/store/api/authApi'

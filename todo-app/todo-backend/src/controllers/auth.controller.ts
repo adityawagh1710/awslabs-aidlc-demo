@@ -1,4 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
+
 import type { AuthService } from '../services/auth.service'
 
 interface RegisterBody {
@@ -62,10 +63,11 @@ export class AuthController {
   // Called by navigator.sendBeacon on window close — no Authorization header available,
   // so the access token is passed in the request body instead.
   async logoutBeacon(
-    request: FastifyRequest<{ Body: LogoutBeaconBody }>,
+    request: FastifyRequest,
     reply: FastifyReply,
   ): Promise<void> {
-    const { accessToken, refreshToken } = request.body
+    const body = request.body as LogoutBeaconBody
+    const { accessToken, refreshToken } = body
     if (!accessToken) return reply.status(204).send()
 
     try {

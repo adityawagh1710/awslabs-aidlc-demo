@@ -3,10 +3,8 @@ import type { FastifyInstance } from 'fastify'
 import { sign } from 'jsonwebtoken'
 
 // ── In-memory stores ──────────────────────────────────────────────────────────
-const { taskStore, categoryStore, taskCategoryStore, redisMock } = vi.hoisted(() => {
+const { taskStore, redisMock } = vi.hoisted(() => {
   const taskStore = new Map<string, Record<string, unknown>>()
-  const categoryStore = new Map<string, Record<string, unknown>>()
-  const taskCategoryStore = new Map<string, Set<string>>()
   const redisData = new Map<string, string>()
 
   const redisMock = {
@@ -20,7 +18,7 @@ const { taskStore, categoryStore, taskCategoryStore, redisMock } = vi.hoisted(()
     quit: vi.fn().mockResolvedValue('OK'),
     on: vi.fn().mockReturnThis(),
   }
-  return { taskStore, categoryStore, taskCategoryStore, redisMock }
+  return { taskStore, redisMock }
 })
 
 vi.mock('ioredis', () => ({

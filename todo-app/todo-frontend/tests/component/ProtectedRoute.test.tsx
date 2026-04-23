@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
+
 import { renderWithProviders } from '../utils/renderWithProviders'
+
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute'
 
 describe('ProtectedRoute', () => {

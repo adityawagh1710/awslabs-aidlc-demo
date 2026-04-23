@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
+
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
@@ -8,7 +10,6 @@ import { useGetTaskByIdQuery, useDeleteTaskMutation, useToggleTaskMutation } fro
 import { useAppDispatch } from '@/store/hooks'
 import { addToast } from '@/store/uiSlice'
 import { cn } from '@/lib/utils'
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 
 const PRIORITY_CLASSES: Record<string, string> = {
   Low: 'bg-gray-100 text-gray-700',

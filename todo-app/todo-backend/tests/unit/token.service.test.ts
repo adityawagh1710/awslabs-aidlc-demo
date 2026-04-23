@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import fc from 'fast-check'
 import type { FastifyInstance } from 'fastify'
+
 import { TokenService } from '../../src/services/token.service'
 import { UnauthorizedError } from '../../src/domain/errors'
 

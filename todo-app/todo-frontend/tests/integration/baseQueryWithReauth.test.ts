@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { server } from '../setup'
 import { configureStore } from '@reduxjs/toolkit'
+
+import { server } from '../setup'
+
 import authReducer, { setCredentials } from '@/store/authSlice'
 import uiReducer from '@/store/uiSlice'
 import { authApi } from '@/store/api/authApi'
@@ -9,15 +11,17 @@ import { authApi } from '@/store/api/authApi'
 const mockUser = { id: 'u1', email: 'test@example.com', createdAt: '2026-01-01T00:00:00Z' }
 
 function makeStore(preloadedState?: object) {
-  return configureStore({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (configureStore as any)({
     reducer: {
       auth: authReducer,
       ui: uiReducer,
       [authApi.reducerPath]: authApi.reducer,
     },
-    middleware: (getDefaultMiddleware) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    middleware: (getDefaultMiddleware: any) =>
       getDefaultMiddleware().concat(authApi.middleware),
-    preloadedState: preloadedState as never,
+    preloadedState,
   })
 }
 

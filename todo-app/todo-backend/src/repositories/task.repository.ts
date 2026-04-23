@@ -1,4 +1,5 @@
 import { Prisma, type Priority, type Task, type TaskStatus } from '@prisma/client'
+
 import { prisma } from './prisma-client'
 
 export interface TaskWithCategories extends Task {

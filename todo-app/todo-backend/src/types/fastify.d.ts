@@ -11,6 +11,12 @@ export interface TokenPayload {
   aud: string | string[]
 }
 
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    user: TokenPayload
+  }
+}
+
 declare module 'fastify' {
   interface FastifyInstance {
     redis: Redis

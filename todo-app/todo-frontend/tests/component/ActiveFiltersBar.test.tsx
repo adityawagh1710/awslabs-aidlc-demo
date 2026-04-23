@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { renderWithProviders } from '../utils/renderWithProviders'
+
 import { ActiveFiltersBar, type ActiveFilter } from '@/components/tasks/ActiveFiltersBar'
 
 const makeFilters = (overrides: Partial<ActiveFilter>[] = []): ActiveFilter[] =>

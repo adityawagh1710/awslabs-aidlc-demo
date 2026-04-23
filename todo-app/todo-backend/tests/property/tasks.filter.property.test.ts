@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
+
 import { normalizeSearch } from '../../src/services/task.service'
 
 // PBT-FILTER-02: Status filter soundness

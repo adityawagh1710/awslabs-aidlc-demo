@@ -1,4 +1,6 @@
-import type { FastifyInstance } from 'fastify'
+import type { FastifyInstance, RouteHandlerMethod } from 'fastify'
+
+import { env } from '../config/env'
 import { prisma } from '../repositories/prisma-client'
 import { UserRepository } from '../repositories/user.repository'
 import { UserService } from '../services/user.service'
@@ -52,8 +54,6 @@ const logoutSchema = {
   },
 } as const
 
-import { env } from '../config/env'
-
 const rateLimitOverride = {
   config: {
     rateLimit: {
@@ -96,7 +96,7 @@ async function authRoutes(fastify: FastifyInstance): Promise<void> {
       preHandler: [fastify.authenticate],
       ...rateLimitOverride,
     },
-    authController.logout.bind(authController),
+    authController.logout.bind(authController) as RouteHandlerMethod,
   )
 
   // Beacon logout — called by navigator.sendBeacon on window close.
@@ -115,7 +115,8 @@ async function authRoutes(fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    authController.logoutBeacon.bind(authController),
+     
+    authController.logoutBeacon.bind(authController) as RouteHandlerMethod,
   )
 }
 

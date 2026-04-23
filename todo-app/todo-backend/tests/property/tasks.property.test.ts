@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import fc from 'fast-check'
+
 import { TaskService } from '../../src/services/task.service'
-import { computeIsOverdue, isPastDate, isValidTimezone } from '../../src/utils/date'
+import { computeIsOverdue } from '../../src/utils/date'
 import { sanitizeText } from '../../src/utils/sanitize'
 
 // ── PBT-TASK-02: Toggle idempotence ──────────────────────────────────────────

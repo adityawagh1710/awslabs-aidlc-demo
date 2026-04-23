@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+
 import { TaskController } from '../controllers/tasks.controller'
 import { TaskService } from '../services/task.service'
 import { CategoryValidationService } from '../services/category-validation.service'

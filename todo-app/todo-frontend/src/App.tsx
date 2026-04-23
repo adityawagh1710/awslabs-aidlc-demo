@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+
 import { PersistAuth } from '@/components/shared/PersistAuth'
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute'
 import { AppShell } from '@/components/layout/AppShell'

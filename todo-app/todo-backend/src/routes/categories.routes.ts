@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+
 import { CategoryController } from '../controllers/categories.controller'
 import { CategoryService } from '../services/category.service'
 import { CategoryRepository } from '../repositories/category.repository'

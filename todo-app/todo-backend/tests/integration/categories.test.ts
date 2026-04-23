@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import type { FastifyInstance } from 'fastify'
+import { sign } from 'jsonwebtoken'
+
+import { buildTestApp } from '../helpers/build-app'
 
 const { categoryStore, taskCategoryStore, redisMock } = vi.hoisted(() => {
   const categoryStore = new Map<string, Record<string, unknown>>()
@@ -65,9 +68,6 @@ vi.mock('../../src/repositories/prisma-client', () => ({
     $disconnect: vi.fn().mockResolvedValue(undefined),
   },
 }))
-
-import { buildTestApp } from '../helpers/build-app'
-import { sign } from 'jsonwebtoken'
 
 function makeToken(userId: string) {
   return `Bearer ${sign(

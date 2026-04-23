@@ -1,9 +1,10 @@
 import './config/env' // Validate env vars first — exits on failure
 
+import Redis from 'ioredis'
+
 import { buildApp } from './app'
 import { prisma } from './repositories/prisma-client'
 import { env } from './config/env'
-import Redis from 'ioredis'
 
 async function start(): Promise<void> {
   // Connectivity checks before accepting traffic
@@ -46,7 +47,7 @@ async function start(): Promise<void> {
 async function verifyDatabase(): Promise<void> {
   try {
     await prisma.$queryRaw`SELECT 1`
-    console.info('✓ PostgreSQL connected')
+    process.stdout.write('✓ PostgreSQL connected\n')
   } catch (err) {
     console.error('✗ PostgreSQL connection failed:', err)
     process.exit(1)
@@ -58,7 +59,7 @@ async function verifyRedis(): Promise<void> {
   try {
     await client.connect()
     await client.ping()
-    console.info('✓ Redis connected')
+    process.stdout.write('✓ Redis connected\n')
   } catch (err) {
     console.error('✗ Redis connection failed:', err)
     process.exit(1)

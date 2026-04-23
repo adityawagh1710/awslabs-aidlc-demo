@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+
 import { TaskService } from '../../src/services/task.service'
 import { ForbiddenError, NotFoundError, ValidationError } from '../../src/domain/errors'
 
@@ -17,18 +18,6 @@ function makeTask(overrides: Record<string, unknown> = {}) {
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     categories: [],
-    ...overrides,
-  }
-}
-
-function makeCategory(overrides: Record<string, unknown> = {}) {
-  return {
-    id: 'cat-1',
-    userId: 'user-1',
-    name: 'Work',
-    colour: null,
-    createdAt: new Date('2026-01-01'),
-    updatedAt: new Date('2026-01-01'),
     ...overrides,
   }
 }

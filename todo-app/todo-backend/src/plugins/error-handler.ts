@@ -35,7 +35,7 @@ async function errorHandlerPlugin(fastify: FastifyInstance): Promise<void> {
     }
 
     // 429 from rate-limit plugin
-    if (error.statusCode === 429) {
+    if ('statusCode' in error && (error as { statusCode: number }).statusCode === 429) {
       return reply.status(429).send({
         error: 'TooManyRequests',
         message: error.message,

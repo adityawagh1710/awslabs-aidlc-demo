@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router-dom'
 import { Tag } from 'lucide-react'
+
 import { useAppSelector } from '@/store/hooks'
 import { selectCurrentUser } from '@/store/authSlice'
 import { useLogoutMutation } from '@/store/api/authApi'

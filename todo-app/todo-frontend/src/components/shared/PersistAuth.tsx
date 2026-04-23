@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+
 import { useAppDispatch } from '@/store/hooks'
 import { setCredentials, setInitialised } from '@/store/authSlice'
 import { useRefreshMutation } from '@/store/api/authApi'
