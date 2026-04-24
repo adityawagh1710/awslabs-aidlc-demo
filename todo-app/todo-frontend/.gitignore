@@ -8,9 +8,11 @@ dist/
 coverage/
 
 # Environment — never commit secrets
+.env
 .env.local
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
 
 # Cypress artifacts — generated at runtime, not source
