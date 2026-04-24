@@ -273,4 +273,10 @@ export class TaskService {
     const updated = await this.taskRepo.update(taskId, updateData)
     return toTaskDTO(updated, new Date())
   }
+
+  async getSuggestions(userId: string, query: string): Promise<string[]> {
+    const q = query.trim()
+    if (q.length < 1) return []
+    return this.taskRepo.getSuggestions(userId, q)
+  }
 }

@@ -71,9 +71,9 @@ export function LoginForm() {
   }
 
   return (
-    <Card data-testid="login-form-card">
-      <CardHeader>
-        <CardTitle>Log in</CardTitle>
+    <Card className="shadow-xl shadow-violet-100/50 border-border/60" data-testid="login-form-card">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg">Welcome back</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -122,11 +122,11 @@ export function LoginForm() {
             />
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-md shadow-violet-200"
               disabled={isLoading}
               data-testid="login-form-submit-button"
             >
-              {isLoading ? 'Logging in…' : 'Log in'}
+              {isLoading ? 'Signing in…' : 'Sign in'}
             </Button>
           </form>
         </Form>
@@ -134,7 +134,7 @@ export function LoginForm() {
           Don&apos;t have an account?{' '}
           <Link
             to="/register"
-            className="underline hover:text-foreground"
+            className="text-violet-600 hover:text-violet-700 font-medium"
             data-testid="login-form-register-link"
           >
             Register

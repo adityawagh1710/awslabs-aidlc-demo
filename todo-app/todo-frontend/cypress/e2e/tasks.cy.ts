@@ -1,7 +1,6 @@
 const EMAIL = `cypress-tasks-${Date.now()}@example.com`
 const PASSWORD = 'Cypress1!'
 
-// Helper: navigate to new task form via the button (ensures auth is ready)
 function goToNewTask() {
   cy.get('[data-testid="dashboard-new-task-button"]', { timeout: 15000 }).click()
   cy.get('[data-testid="task-form"]', { timeout: 15000 }).should('be.visible')
@@ -14,7 +13,6 @@ describe('Task Management', () => {
 
   beforeEach(() => {
     cy.loginByApi(EMAIL, PASSWORD)
-    // loginByApi already navigates to / and waits for dashboard
     cy.get('[data-testid="dashboard-page"]', { timeout: 15000 }).should('be.visible')
   })
 
@@ -49,7 +47,7 @@ describe('Task Management', () => {
     cy.get('[data-testid="task-form-submit"]').click()
     cy.visit('/')
     cy.contains('Toggle me')
-      .closest('tr')
+      .closest('[data-testid^="task-row-"]')
       .find('input[type="checkbox"]')
       .click()
     cy.contains('Toggle me').should('have.class', 'line-through')
@@ -61,9 +59,9 @@ describe('Task Management', () => {
     cy.get('[data-testid="task-form-submit"]').click()
     cy.visit('/')
     cy.contains('Delete me')
-      .closest('tr')
+      .closest('[data-testid^="task-row-"]')
       .find('[aria-label="Delete task"]')
-      .click()
+      .click({ force: true })
     cy.contains('Are you sure').should('be.visible')
     cy.contains('button', 'Delete').click()
     cy.contains('Delete me').should('not.exist')
@@ -75,9 +73,9 @@ describe('Task Management', () => {
     cy.get('[data-testid="task-form-submit"]').click()
     cy.visit('/')
     cy.contains('Edit me')
-      .closest('tr')
+      .closest('[data-testid^="task-row-"]')
       .find('[aria-label="Edit task"]')
-      .click()
+      .click({ force: true })
     cy.get('[data-testid="task-form"]', { timeout: 10000 }).should('be.visible')
     cy.get('[data-testid="task-form-title"]').clear().type('Edited title')
     cy.get('[data-testid="task-form-submit"]').click()

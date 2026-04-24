@@ -114,10 +114,6 @@ export function DashboardPage() {
   const { data, isLoading } = useGetTasksQuery(queryArgs)
   const { data: categories = [] } = useGetCategoriesQuery()
 
-  // Fetch all task titles for search suggestions (no filters, large page)
-  const { data: allTasksData } = useGetTasksQuery({ pageSize: 200 })
-  const suggestions = allTasksData?.items.map((t) => t.title) ?? []
-
   // ── Handlers ────────────────────────────────────────────────────────────────
   const handleSearch = (query: string) => {
     setSearchParams((prev) => {
@@ -165,23 +161,27 @@ export function DashboardPage() {
   const activeFilters = deriveActiveFilters(searchParams, categories, setSearchParams)
   const hasActiveFilters = activeFilters.length > 0
 
+  const total = data?.total ?? 0
+  const overdue = data?.items.filter((t) => t.isOverdue && !t.completed).length ?? 0
+
   return (
-    <div className="mx-auto max-w-5xl space-y-4 px-4 py-6" data-testid="dashboard-page">
+    <div className="space-y-5" data-testid="dashboard-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-            My Tasks
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {data?.total ?? 0} task{data?.total !== 1 ? 's' : ''}
+          <h1 className="text-3xl font-bold gradient-text">My Tasks</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {total} task{total !== 1 ? 's' : ''}
+            {overdue > 0 && (
+              <span className="ml-2 text-rose-500 font-medium">· {overdue} overdue</span>
+            )}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <SortControls />
           <Button
             onClick={() => navigate('/tasks/new')}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md shadow-violet-200"
             data-testid="dashboard-new-task-button"
           >
             <Plus className="mr-1 h-4 w-4" />
@@ -191,7 +191,7 @@ export function DashboardPage() {
       </div>
 
       {/* Search */}
-      <SearchInput value={searchParams.get('search') ?? ''} onSearch={handleSearch} suggestions={suggestions} />
+      <SearchInput value={searchParams.get('search') ?? ''} onSearch={handleSearch} />
 
       {/* Filters */}
       <FilterBar

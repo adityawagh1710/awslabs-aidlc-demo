@@ -110,6 +110,21 @@ async function taskRoutes(fastify: FastifyInstance): Promise<void> {
   )
 
   fastify.get(
+    '/suggestions',
+    {
+      preHandler: fastify.authenticate,
+      schema: {
+        querystring: {
+          type: 'object',
+          properties: { q: { type: 'string', maxLength: 200 } },
+        },
+        response: { 200: { type: 'array', items: { type: 'string' } } },
+      },
+    },
+    controller.getSuggestions.bind(controller),
+  )
+
+  fastify.get(
     '/:id',
     {
       preHandler: fastify.authenticate,

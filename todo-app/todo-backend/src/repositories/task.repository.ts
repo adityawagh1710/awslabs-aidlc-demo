@@ -303,4 +303,26 @@ export class TaskRepository {
   async delete(id: string): Promise<void> {
     await prisma.task.delete({ where: { id } })
   }
+
+  async getSuggestions(userId: string, query: string, limit = 8): Promise<string[]> {
+    // Prefix-match each word with :* so "buy g" matches "buy groceries"
+    const tsQuery = query
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => `${w}:*`)
+      .join(' & ')
+
+    if (!tsQuery) return []
+
+    const rows = await prisma.$queryRaw<Array<{ title: string }>>(Prisma.sql`
+      SELECT DISTINCT t.title
+      FROM "Task" t
+      WHERE t."userId" = ${userId}
+        AND t.search_vector @@ to_tsquery('english', ${tsQuery})
+      ORDER BY t.title
+      LIMIT ${limit}
+    `)
+    return rows.map((r) => r.title)
+  }
 }

@@ -126,6 +126,10 @@ export const tasksApi = createApi({
       },
       invalidatesTags: (_r, _e, { id }) => [{ type: 'Task', id }],
     }),
+
+    getSuggestions: builder.query<string[], string>({
+      query: (q) => `/tasks/suggestions?q=${encodeURIComponent(q)}`,
+    }),
   }),
 })
 
@@ -136,4 +140,5 @@ export const {
   useUpdateTaskMutation,
   useDeleteTaskMutation,
   useToggleTaskMutation,
+  useGetSuggestionsQuery,
 } = tasksApi

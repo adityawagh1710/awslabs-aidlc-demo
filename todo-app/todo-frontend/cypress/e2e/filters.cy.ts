@@ -53,8 +53,9 @@ describe('Search & Filters', () => {
 
   it('searches by title', () => {
     cy.get('[data-testid="search-input-field"]').type('High priority')
-    cy.get('[data-testid="search-input-button"]').click()
-    cy.contains('High priority task').should('be.visible')
+    // Search is now live — no submit button needed, wait for results
+    cy.contains('High priority task', { timeout: 10000 }).should('be.visible')
+    cy.contains('Low priority task').should('not.exist')
   })
 
   it('sorts by priority', () => {

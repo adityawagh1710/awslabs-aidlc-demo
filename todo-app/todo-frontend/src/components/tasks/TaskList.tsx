@@ -22,58 +22,49 @@ export function TaskList({
   showClearFilters,
   onClearFilters,
 }: TaskListProps) {
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16" data-testid="task-list">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  if (tasks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/60 py-16 text-center" data-testid="task-list">
+        <div className="text-4xl mb-3">📋</div>
+        <p className="text-muted-foreground text-sm mb-3" data-testid="task-list-empty-message">
+          {emptyMessage ?? 'No tasks yet.'}
+        </p>
+        {showClearFilters ? (
+          <button
+            onClick={onClearFilters}
+            className="text-sm text-violet-600 hover:text-violet-700 underline underline-offset-2"
+            data-testid="task-list-empty-clear-filters"
+          >
+            Clear filters
+          </button>
+        ) : (
+          <button
+            onClick={onNewTask}
+            className="text-sm text-violet-600 hover:text-violet-700 underline underline-offset-2"
+            data-testid="task-list-empty-create"
+          >
+            Create your first task!
+          </button>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div data-testid="task-list">
-      <table className="w-full text-sm" data-testid="task-list-table">
-        <caption className="sr-only">My Tasks</caption>
-        <thead>
-          <tr className="border-b text-left text-muted-foreground">
-            <th scope="col" className="w-8 py-2" />
-            <th scope="col" className="py-2 pr-4">Title</th>
-            <th scope="col" className="py-2 pr-4 hidden sm:table-cell">Priority</th>
-            <th scope="col" className="py-2 pr-4 hidden md:table-cell">Due Date</th>
-            <th scope="col" className="py-2 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td colSpan={5} className="py-8 text-center">
-                <LoadingSpinner />
-              </td>
-            </tr>
-          ) : tasks.length === 0 ? (
-            <tr>
-              <td colSpan={5} className="py-12 text-center text-muted-foreground">
-                <p className="mb-2" data-testid="task-list-empty-message">
-                  {emptyMessage ?? 'No tasks yet.'}
-                </p>
-                {showClearFilters ? (
-                  <button
-                    onClick={onClearFilters}
-                    className="text-primary underline underline-offset-2"
-                    data-testid="task-list-empty-clear-filters"
-                  >
-                    Clear filters
-                  </button>
-                ) : (
-                  <button
-                    onClick={onNewTask}
-                    className="text-primary underline underline-offset-2"
-                    data-testid="task-list-empty-create"
-                  >
-                    Create your first task!
-                  </button>
-                )}
-              </td>
-            </tr>
-          ) : (
-            tasks.map((task) => (
-              <TaskRow key={task.id} task={task} queryArgs={queryArgs} />
-            ))
-          )}
-        </tbody>
-      </table>
+    <div className="space-y-2" data-testid="task-list">
+      {/* Accessible table caption for screen readers */}
+      <span className="sr-only">Task list</span>
+      {tasks.map((task) => (
+        <TaskRow key={task.id} task={task} queryArgs={queryArgs} />
+      ))}
     </div>
   )
 }

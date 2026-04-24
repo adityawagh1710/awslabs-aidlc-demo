@@ -55,24 +55,26 @@ export function TaskFormPage({ mode }: TaskFormPageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 px-4 py-6" data-testid="task-form-page">
-      <div className="flex items-center gap-2">
-        <Link to={backTo} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Link>
+    <div className="mx-auto max-w-xl space-y-6" data-testid="task-form-page">
+      <Link
+        to={backTo}
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Link>
+
+      <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <h1 className="text-xl font-semibold gradient-text mb-6">
+          {mode === 'create' ? '✨ New Task' : '✏️ Edit Task'}
+        </h1>
+        <TaskForm
+          mode={mode}
+          initialValues={existingTask}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
       </div>
-
-      <h1 className="text-2xl font-semibold">
-        {mode === 'create' ? 'New Task' : 'Edit Task'}
-      </h1>
-
-      <TaskForm
-        mode={mode}
-        initialValues={existingTask}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
     </div>
   )
 }

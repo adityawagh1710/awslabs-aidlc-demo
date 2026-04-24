@@ -119,4 +119,11 @@ export class TaskController {
     const task = await this.taskService.toggleCompletion(id, userId)
     reply.send(task)
   }
+
+  async getSuggestions(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const userId = request.user.sub
+    const { q } = request.query as { q?: string }
+    const suggestions = await this.taskService.getSuggestions(userId, q ?? '')
+    reply.send(suggestions)
+  }
 }
