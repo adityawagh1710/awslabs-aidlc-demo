@@ -34,20 +34,20 @@ describe('TaskRow', () => {
     expect(screen.getByTestId('task-row-title-task-1')).toBeInTheDocument()
   })
 
-  it('applies red left-border class when isOverdue=true', () => {
+  it('applies overdue rose styling when isOverdue=true', () => {
     renderWithProviders(
       <table><tbody><TaskRow task={makeTask({ isOverdue: true })} queryArgs={queryArgs} /></tbody></table>
     )
     const row = screen.getByTestId('task-row-task-1')
-    expect(row.className).toMatch(/border-l-red-500/)
+    expect(row.className).toMatch(/border-rose-200/)
   })
 
-  it('does NOT apply overdue border when isOverdue=false', () => {
+  it('does NOT apply overdue styling when isOverdue=false', () => {
     renderWithProviders(
       <table><tbody><TaskRow task={makeTask({ isOverdue: false })} queryArgs={queryArgs} /></tbody></table>
     )
     const row = screen.getByTestId('task-row-task-1')
-    expect(row.className).not.toMatch(/border-l-red-500/)
+    expect(row.className).not.toMatch(/border-rose-200/)
   })
 
   it('applies line-through to completed task title', () => {

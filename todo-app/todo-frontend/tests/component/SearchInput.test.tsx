@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithProviders } from '../utils/renderWithProviders'
@@ -7,33 +7,33 @@ import { renderWithProviders } from '../utils/renderWithProviders'
 import { SearchInput } from '@/components/tasks/SearchInput'
 
 describe('SearchInput', () => {
-  it('renders input and search button', () => {
+  it('renders input field', () => {
     renderWithProviders(<SearchInput value="" onSearch={vi.fn()} />)
     expect(screen.getByTestId('search-input-field')).toBeInTheDocument()
-    expect(screen.getByTestId('search-input-button')).toBeInTheDocument()
   })
 
-  it('calls onSearch with trimmed value on button click', async () => {
+  it('calls onSearch with trimmed value after debounce when typing', async () => {
     const onSearch = vi.fn()
     renderWithProviders(<SearchInput value="" onSearch={onSearch} />)
     await userEvent.type(screen.getByTestId('search-input-field'), '  buy milk  ')
-    await userEvent.click(screen.getByTestId('search-input-button'))
-    expect(onSearch).toHaveBeenCalledWith('buy milk')
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenLastCalledWith('buy milk')
+    }, { timeout: 1000 })
   })
 
-  it('calls onSearch on Enter key press', async () => {
+  it('calls onSearch via debounce after typing', async () => {
     const onSearch = vi.fn()
     renderWithProviders(<SearchInput value="" onSearch={onSearch} />)
-    await userEvent.type(screen.getByTestId('search-input-field'), 'urgent{Enter}')
-    expect(onSearch).toHaveBeenCalledWith('urgent')
+    await userEvent.type(screen.getByTestId('search-input-field'), 'urgent')
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenLastCalledWith('urgent')
+    }, { timeout: 1000 })
   })
 
-  it('calls onSearch with empty string when submitted empty', async () => {
+  it('calls onSearch with empty string when clear button clicked', async () => {
     const onSearch = vi.fn()
-    renderWithProviders(<SearchInput value="previous" onSearch={onSearch} />)
-    const input = screen.getByTestId('search-input-field')
-    await userEvent.clear(input)
-    await userEvent.click(screen.getByTestId('search-input-button'))
+    renderWithProviders(<SearchInput value="x" onSearch={onSearch} />)
+    await userEvent.click(screen.getByLabelText('Clear search'))
     expect(onSearch).toHaveBeenCalledWith('')
   })
 
